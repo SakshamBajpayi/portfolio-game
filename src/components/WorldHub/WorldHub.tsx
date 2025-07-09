@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './WorldHub.scss';
 
 import bg from './assets/bg-hub.png';
@@ -7,71 +7,115 @@ import pigBack from './assets/pig-back.png';
 import pigLeft from './assets/pig-left.png';
 import pigRight from './assets/pig-right.png';
 
-const WorldHub = () => {
-  const [position, setPosition] = useState({ x: 39.7, y: 100 }); // start off screen
-  const [direction, setDirection] = useState<'front' | 'back' | 'left' | 'right'>('back');
-  const [entered, setEntered] = useState(false);
+import ArcadeNavButtons from '../Shared/ArcadeNavButtons';
 
-  // Animate Pigasso entering from bottom
+const WorldHub = () => {
+  const [position, setPosition] = useState({ x: 39.7, y: 110 }); // ⬅️ Start off screen bottom
+  const [direction, setDirection] = useState<'front' | 'back' | 'left' | 'right'>('back');
+  const [isWalkingIn, setIsWalkingIn] = useState(true);
+  const [isMoving, setIsMoving] = useState(false);
+
+  const heldKeys = useRef(new Set<string>());
+  const rafRef = useRef<number | null>(null);
+
+  // 🎬 Walk-in animation
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setPosition({ x: 39.7, y: 70 }); // move to path area
-      setEntered(true);
-    }, 500); // delay entrance slightly
-    return () => clearTimeout(timeout);
+    let y = 110;
+    const walkInterval = setInterval(() => {
+      y -= 0.4;
+      if (y <= 70) {
+        y = 70;
+        clearInterval(walkInterval);
+        setIsWalkingIn(false);
+        setDirection('front'); // Face forward after entering
+      }
+      setPosition({ x: 39.7, y });
+    }, 16); // ≈60fps
+    return () => clearInterval(walkInterval);
   }, []);
 
-  // Arrow key controls
+  // 🎮 Movement
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      setPosition((prev) => {
-        const step = 1.4;
-        switch (e.key) {
-          case 'ArrowUp':
-            setDirection('back');
-            return { ...prev, y: Math.max(prev.y - step, 0) };
-          case 'ArrowDown':
-            setDirection('front');
-            return { ...prev, y: Math.min(prev.y + step, 100) };
-          case 'ArrowLeft':
-            setDirection('left');
-            return { ...prev, x: Math.max(prev.x - step, 0) };
-          case 'ArrowRight':
-            setDirection('right');
-            return { ...prev, x: Math.min(prev.x + step, 100) };
-          default:
-            return prev;
+    const step = 0.3;
+
+    const move = () => {
+      setPosition(prev => {
+        let { x, y } = prev;
+        if (heldKeys.current.has('ArrowUp')) {
+          setDirection('back');
+          y = Math.max(0, y - step);
         }
+        if (heldKeys.current.has('ArrowDown')) {
+          setDirection('front');
+          y = Math.min(100, y + step);
+        }
+        if (heldKeys.current.has('ArrowLeft')) {
+          setDirection('left');
+          x = Math.max(0, x - step);
+        }
+        if (heldKeys.current.has('ArrowRight')) {
+          setDirection('right');
+          x = Math.min(100, x + step);
+        }
+        return { x, y };
       });
+
+      rafRef.current = requestAnimationFrame(move);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const down = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        heldKeys.current.add(e.key);
+        if (!rafRef.current) {
+          setIsMoving(true);
+          rafRef.current = requestAnimationFrame(move);
+        }
+      }
+    };
+
+    const up = (e: KeyboardEvent) => {
+      heldKeys.current.delete(e.key);
+      if (heldKeys.current.size === 0 && rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+        setIsMoving(false);
+      }
+    };
+
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
-  const getAvatarSprite = () => {
-    switch (direction) {
-      case 'front': return pigFront;
-      case 'back': return pigBack;
-      case 'left': return pigLeft;
-      case 'right': return pigRight;
-      default: return pigFront;
-    }
-  };
+  const sprite = (() => {
+    if (isWalkingIn) return pigBack; // Walk in facing up
+    return {
+      front: pigFront,
+      back: pigBack,
+      left: pigLeft,
+      right: pigRight,
+    }[direction];
+  })();
 
   return (
     <div className="worldhub">
-      <img src={bg} alt="World Hub Background" className="hub-bg" />
+      <img src={bg} className="hub-bg" alt="Map" />
+      <ArcadeNavButtons />
 
-      <img
-        src={getAvatarSprite()}
-        alt="Pigasso"
-        className={`pig-avatar ${entered ? 'entered' : ''}`}
-        style={{
-          left: `${position.x}%`,
-          top: `${position.y}%`,
-        }}
-      />
+      <div
+        className="pig-container"
+        style={{ left: `${position.x}%`, top: `${position.y}%` }}
+      >
+        <img
+          src={sprite}
+          className={`pig-avatar ${(isMoving || isWalkingIn) ? 'bouncing' : ''}`}
+          alt="Pigasso"
+        />
+      </div>
     </div>
   );
 };

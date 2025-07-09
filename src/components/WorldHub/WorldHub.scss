@@ -7,23 +7,53 @@
 }
 
 .hub-bg {
-  height: 110vh;                      // ⬆️ Vertical zoom level
-  width: auto;                        // 🔒 Maintain aspect ratio
-  object-fit: unset;                  // 🚫 No forced fit
+  height: 110vh;
+  width: auto;
   image-rendering: pixelated;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scaleX(1.28); // 👈 Horizontal stretch!
+  transform: translate(-50%, -50%) scaleX(1.28);
   z-index: 0;
 }
-.pig-avatar {
+
+/* Positioning wrapper */
+.pig-container {
   position: absolute;
   transform: translate(-50%, -50%);
-  image-rendering: pixelated;
-  height: 110px;
   z-index: 2;
-  transition: top 0.1s linear, left 0.1s linear;
 }
 
+.pig-avatar {
+  height: 110px;
+  image-rendering: pixelated;
+  transition: top 0.1s linear, left 0.1s linear;
 
+  &.bouncing {
+    animation: bounce 0.25s infinite alternate;
+  }
+}
+
+/* Shared bounce */
+.pig-avatar.bouncing {
+  animation: pigBounce 0.3s infinite ease-in-out alternate;
+}
+
+@keyframes pigBounce {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
+}
+
+/* Bounce when entering */
+@keyframes bounceIn {
+  0%   { transform: translate(-50%, 100%) scale(0.8); opacity: 0; }
+  60%  { transform: translate(-50%, -10%) scale(1.05); opacity: 1; }
+  80%  { transform: translate(-50%, 5%) scale(0.98); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Bounce while walking */
+@keyframes bounceStep {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
