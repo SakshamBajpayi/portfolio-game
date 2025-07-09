@@ -1,0 +1,38 @@
+.pigasso {
+  position: absolute;
+  left: 39.7%; // Shifted ~1.5-2% to the left (~1 inch)
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.pigasso-sprite {
+  height: 120px;
+  image-rendering: pixelated;
+  animation: pigBounce 0.4s infinite ease-in-out;
+  filter: drop-shadow(2px 2px 0 black);
+}
+
+@keyframes pigBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.walk-in {
+  bottom: -160px;
+  animation: walkInFromBottom 2.4s ease-out forwards;
+}
+
+@keyframes walkInFromBottom {
+  to {
+    bottom: 25%;
+  }
+}
+
+.idle {
+  bottom: 25%;
+}

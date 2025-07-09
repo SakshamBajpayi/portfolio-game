@@ -1,0 +1,29 @@
+.worldhub {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: black;
+  position: relative;
+}
+
+.hub-bg {
+  height: 110vh;                      // ⬆️ Vertical zoom level
+  width: auto;                        // 🔒 Maintain aspect ratio
+  object-fit: unset;                  // 🚫 No forced fit
+  image-rendering: pixelated;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(1.28); // 👈 Horizontal stretch!
+  z-index: 0;
+}
+.pig-avatar {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+  height: 110px;
+  z-index: 2;
+  transition: top 0.1s linear, left 0.1s linear;
+}
+
+

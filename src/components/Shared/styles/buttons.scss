@@ -1,0 +1,94 @@
+.glow-button-magenta {
+  background-color: magenta;
+  color: black;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  padding: 8px 16px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 4px solid black;
+  position: relative;
+  z-index: 1;
+  background-image: linear-gradient(to bottom, #ff66cc 0%, magenta 45%, #aa007a 100%);
+  box-shadow:
+    0 6px 0 0 black,
+    0 8px 15px rgba(0, 0, 0, 0.6),
+    inset 0 2px 2px rgba(255, 255, 255, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.glow-button-magenta:hover {
+  transform: translateY(2px);
+  box-shadow:
+    0 4px 0 0 black,
+    0 6px 10px rgba(0, 0, 0, 0.4),
+    inset 0 2px 2px rgba(255, 255, 255, 0.3);
+}
+
+.glow-button-magenta:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 2px 0 0 black,
+    0 3px 6px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  background-image: linear-gradient(to bottom, #cc3399 0%, #990066 100%);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px black,
+      2px 2px 0 0 black,
+      0 0 8px magenta,
+      0 0 12px magenta;
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px black,
+      2px 2px 0 0 black,
+      0 0 12px #ff66cc,
+      0 0 20px #ff66cc;
+  }
+}
+
+.pulse-button {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.glow-button-magenta:active::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  pointer-events: none;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    0deg,
+    #ff00ff 0px,
+    #ff00ff 1px,
+    #00ffff 1px,
+    #00ffff 2px
+  );
+  opacity: 0.6;
+  animation: crtBurst 0.2s steps(2, end);
+}
+
+@keyframes crtBurst {
+  0% {
+    transform: scale(1.1) skewX(4deg) skewY(3deg);
+    opacity: 0.85;
+    filter: brightness(2) contrast(1.6);
+  }
+  50% {
+    transform: scale(0.95) skewX(-4deg) skewY(-3deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+    filter: none;
+  }
+}
