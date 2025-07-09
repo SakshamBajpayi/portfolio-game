@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import './Pigasso.scss';
 import pigBack from './assets/pig-back.png';
 import pigFront from './assets/pig-front.png';
