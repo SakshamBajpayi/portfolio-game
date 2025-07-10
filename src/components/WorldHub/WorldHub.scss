@@ -17,7 +17,7 @@
   z-index: 0;
 }
 
-/* Positioning wrapper */
+/* Pig positioning */
 .pig-container {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -27,33 +27,149 @@
 .pig-avatar {
   height: 110px;
   image-rendering: pixelated;
-  transition: top 0.1s linear, left 0.1s linear;
 
   &.bouncing {
-    animation: bounce 0.25s infinite alternate;
+    animation: pigBounce 0.3s infinite ease-in-out alternate;
   }
 }
 
-/* Shared bounce */
-.pig-avatar.bouncing {
-  animation: pigBounce 0.3s infinite ease-in-out alternate;
-}
-
 @keyframes pigBounce {
-  0%   { transform: translateY(0); }
+  0% { transform: translateY(0); }
   100% { transform: translateY(-5px); }
 }
 
-/* Bounce when entering */
-@keyframes bounceIn {
-  0%   { transform: translate(-50%, 100%) scale(0.8); opacity: 0; }
-  60%  { transform: translate(-50%, -10%) scale(1.05); opacity: 1; }
-  80%  { transform: translate(-50%, 5%) scale(0.98); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+/* Glow + bounce effect for interaction text */
+.interaction-prompt {
+  position: absolute;
+  top: 4%;
+  left: 40%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  font-size: 16px;
+  color: #39FF14;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: transparent;
+  text-shadow: 0 0 4px #39FF14, 0 0 8px #39FF14;
+  animation: glow 1s infinite alternate, bounceText 1s infinite;
+  z-index: 100;
 }
 
-/* Bounce while walking */
-@keyframes bounceStep {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-4px); }
+@keyframes glow {
+  from { text-shadow: 0 0 2px #39FF14; }
+  to   { text-shadow: 0 0 8px #39FF14; }
+}
+
+@keyframes bounceText {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, -5px); }
+}
+
+/* Typewriter text under Pigasso - WORLDHUB OVERRIDES */
+.pig-typewriter-text {
+  position: absolute;
+  overflow: visible !important;
+  width: auto !important;
+  white-space: pre-wrap;
+}
+
+.pig-intro-glitch {
+  display: inline-block;
+  overflow: visible;
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  font-size: 12px;
+  color: #ff69b4;
+  text-shadow: 0 0 2px #ff69b4, 0 0 5px #ff69b4;
+}
+
+.pig-intro-glitch.shimmer span {
+  animation: flicker-glitch 0.3s infinite alternate;
+}
+
+@keyframes flicker-glitch {
+  0%   { opacity: 1; transform: translate(0, 0); }
+  50%  { opacity: 0.6; transform: translate(-1px, 1px); }
+  100% { opacity: 1; transform: translate(1px, -1px); }
+}
+
+.gallery-label {
+  position: absolute;
+  top: 15%;
+  left: 18%;
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  font-size: 22px;
+  color: #FFFF33; /* neon yellow */
+  text-shadow: 0 0 8px #FFFF33, 0 0 16px #FFFF33;
+  z-index: 1;
+}
+
+.zone-typewriter-text {
+  position: absolute;
+  z-index: 10;
+  // other styles...
+}
+
+.death-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(#000, #400000);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: blink 0.4s infinite alternate;
+}
+
+@keyframes blink {
+  from { background-color: #000; }
+  to { background-color: #300; }
+}
+
+.death-message {
+  font-family: 'Press Start 2P', monospace;
+  color: red;
+  font-size: 32px;
+  text-shadow: 0 0 8px #ff0000;
+  margin-bottom: 30px;
+}
+
+.restart-button {
+  background: black;
+  color: red;
+  border: 2px solid red;
+  padding: 12px 24px;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+  text-shadow: 0 0 6px red;
+  transition: all 0.2s;
+}
+
+.restart-button:hover {
+  background: red;
+  color: black;
+}
+.death-overlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: blink 0.4s infinite;
+}
+
+.death-text {
+  color: red;
+  font-size: 3rem;
+  font-family: 'Press Start 2P', monospace;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
 }

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './StartScreen.scss';
 import startupVideo from './assets/startup.mp4';
+import avatarWalk from './assets/avatar-walk.png';
+import avatarIdle from './assets/avatar-idle.png';
 
 function StartScreen() {
-  const [avatarIdle, setAvatarIdle] = useState(false);
+  const [avatarIsIdle, setAvatarIsIdle] = useState(false);
   const [typedText, setTypedText] = useState('');
   const [cursorVisible, setCursorVisible] = useState(true);
   const fullText = "Hi, I'm Pigasso.";
@@ -12,40 +14,38 @@ function StartScreen() {
 
   useEffect(() => {
     let cursorInterval: number | undefined;
-    if (avatarIdle) {
+    if (avatarIsIdle) {
       cursorInterval = window.setInterval(() => {
         setCursorVisible((prev) => !prev);
       }, 500);
     }
     return () => clearInterval(cursorInterval);
-  }, [avatarIdle]);
+  }, [avatarIsIdle]);
 
   useEffect(() => {
-    if (avatarIdle && typedText.length < fullText.length) {
+    if (avatarIsIdle && typedText.length < fullText.length) {
       const timeout = setTimeout(() => {
         setTypedText(fullText.slice(0, typedText.length + 1));
       }, 120);
       return () => clearTimeout(timeout);
     }
-  }, [avatarIdle, typedText]);
+  }, [avatarIsIdle, typedText]);
 
   const playClickSound = () => {
     const audio = new Audio('/sfx/click.mp3');
     audio.volume = 0.7;
-    audio.play().catch((err) =>
-      console.warn('🔇 Sound error:', err)
-    );
+    audio.play().catch((err) => console.warn('🔇 Sound error:', err));
   };
 
   const handleStart = () => {
     playClickSound();
     localStorage.setItem('gameStarted', 'true');
-    navigate('/hub'); // 👈 navigate to WorldHub
+    navigate('/hub');
   };
 
   const handleWalkInEnd = () => {
     setTimeout(() => {
-      setAvatarIdle(true);
+      setAvatarIsIdle(true);
     }, 200);
   };
 
@@ -61,28 +61,20 @@ function StartScreen() {
           <h1 className="title-text" data-text="WELCOME TO SAKSHAM'S WORLD">
             WELCOME TO SAKSHAM'S WORLD
           </h1>
-
-          <button
-            className="glow-button-magenta"
-            onClick={handleStart}
-          >
+          <button className="glow-button-magenta" onClick={handleStart}>
             &gt; CLICK TO PLAY
           </button>
         </div>
 
         <div className="avatar-walk-in" onAnimationEnd={handleWalkInEnd}>
-          <div className={`avatar-inner ${avatarIdle ? 'idle' : ''}`}>
+          <div className={`avatar-inner ${avatarIsIdle ? 'idle' : ''}`}>
             <img
-              src={
-                avatarIdle
-                  ? '/assets/avatar-idle.png'
-                  : '/assets/avatar-walk.png'
-              }
+              src={avatarIsIdle ? avatarIdle : avatarWalk}
               alt="Pigasso"
-              className={`avatar-img ${avatarIdle ? 'avatar-breath' : ''}`}
+              className={`avatar-img ${avatarIsIdle ? 'avatar-breath' : ''}`}
             />
 
-            {avatarIdle && (
+            {avatarIsIdle && (
               <div className="pig-typewriter-text">
                 <p className="pig-intro-glitch">
                   {typedText.split('').map((char, index) => (
